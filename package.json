@@ -1,0 +1,17 @@
+{
+  "name": "coffee_shop_project",
+  "version": "1.0.0",
+  "description": "some shit from the internet",
+  "start": "nodemon app.js",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "4.17.3",
+    "express-handlebars": "^6.0.5",
+    "hbs": "^4.2.0",
+    "mongodb": "4.5.0",
+    "mongoose": "6.3.1",
+    "nodemon": "2.0.15"
+  }
+}
