@@ -1,7 +1,7 @@
 {
   "name": "coffee_shop_project",
   "version": "1.0.0",
-  "description": "some shit from the internet",
+  "description": "The Black&White Production",
   "start": "nodemon app.js",
   "dependencies": {
     "body-parser": "^1.20.0",
