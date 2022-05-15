@@ -19,13 +19,38 @@ const dessertModel = require('./schemas/dessert_mod');
 const shopModel = require('./schemas/black_white_mod');
 const bodyParser = require('body-parser');
 const cors = require("cors");
-//const { engine } = require('express-handlebars');
+const { engine } = require('express-handlebars');
+const path = require("path");
 
 app.set('view engine', 'hbs');
 
-// to serve static assets (html/css files)
+// to serve static assets (css files)
 app.use(cors());
 app.use(express.static('public'));
+app.engine('.hbs', engine({
+    extname: ".hbs",
+    defaultLayout: "main",
+    // a path to all other layouts
+    layoutsDir: path.join(__dirname, 'views/layouts')
+}))
+
+//TODO: do it with env file
+mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+    { useNewUrlParser: true, useUnifiedTopology: true },
+    (err, data) => {
+        if (err) { console.log('no connection') }
+        else { console.log('connection successful') }
+    })
+
+
+app.get('/', (req, res) => {
+    res.render('index', {
+        title: 'The Black&White Production',
+        style: 'main.css'
+    })
+    console.log('inside');
+})
+
 app.get('/', (req, res) => {
     //if no params, we'll show products
     if (req.query.search) {
@@ -36,6 +61,7 @@ app.get('/', (req, res) => {
                 .exec((err, data) => {
                     if (data) {
                         res.render("search", {data: data});
+                        //console.log('inside');
                     }
                 })
         }
@@ -44,17 +70,9 @@ app.get('/', (req, res) => {
         }
     }
     else {
-        res.sendFile(__dirname + '/views/index.html')
+        res.sendFile(__dirname + '/views/index.html');
     }
 });
-
-//TODO: do it with env file
-mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-    { useNewUrlParser: true, useUnifiedTopology: true },
-    (err, data) => {
-    if (err) { console.log('no connection') }
-    else { console.log('connection successful') }
-})
 
 //middleware runs for every request, if not specify next()
 // app.use(function (req, res, next) {
@@ -62,36 +80,6 @@ mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myF
 //     next();
 // });
 
-// Strictly speaking, HTTP 301 and 302 are not required to keep the same method and body content when redirecting.
-// If you're redirecting a POST request, you should use HTTP 307 as a replacement for HTTP 302, and HTTP 308 as a
-// replacement for HTTP 301.
-app.get('/:title', bodyParser.urlencoded({ extended: false }), (req, res) => {
-    console.log(req.params);
-    try {
-        coffeeModel.findOne({url: req.params.title})
-            .limit(1)
-            .select({_id: 0})
-            .exec((err, data) => {
-                if (data) {
-                    res.json(data);
-                }
-            })
-    }
-    catch (err) {
-        console.log(err);
-    }
-})
-
-app.get('/menu', async (req, res) => {
-    await coffeeModel.find({}, (err, obj) => {
-        if (err) {
-            res.json(err);
-        }
-        else {
-            res.json(obj);
-        }
-    })
-})
 
 //specific get
 app.get('/:coffee_id', async (req, res) => {
