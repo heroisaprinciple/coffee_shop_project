@@ -42,26 +42,16 @@ mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myF
         else { console.log('connection successful') }
     })
 
-
-app.get('/', (req, res) => {
-    res.render('index', {
-        title: 'The Black&White Production',
-        style: 'main.css'
-    })
-    console.log('inside');
-})
-
 app.get('/', (req, res) => {
     //if no params, we'll show products
     if (req.query.search) {
         try {
             // ".*" ij mongo is LIKE in sql db
             coffeeModel.find({title: {$regex: ".*" + req.query.search + ".*"}})
-                .select({_id: 0})
+                .select({_id: 0}).lean()
                 .exec((err, data) => {
                     if (data) {
                         res.render("search", {data: data});
-                        //console.log('inside');
                     }
                 })
         }
@@ -70,7 +60,10 @@ app.get('/', (req, res) => {
         }
     }
     else {
-        res.sendFile(__dirname + '/views/index.html');
+        res.render('index', {
+            title: 'The Black&White Production',
+            style: 'main.css'
+        })
     }
 });
 
@@ -80,32 +73,20 @@ app.get('/', (req, res) => {
 //     next();
 // });
 
-
-//specific get
-app.get('/:coffee_id', async (req, res) => {
-    try {
-        //it will find and show the obj created in the model by using id
-        let findCoffById = await coffeeModel.findById(req.params.id);
-        res.json(findCoffById);
-    }
-    catch(err) {
-        res.json({message: err})
-    }
+app.get('/:url', (req, res) => {
+    coffeeModel.find({ url: req.params.url })
+        .select({_id: 0}).lean()
+        .exec((err, entityObject) => {
+        if (err) { console.log(err); }
+        else {
+            res.render('entity', {
+                style: 'entity.css',
+                data: entityObject
+            })
+        }
+    })
 })
 
-// update a coffee entry
-// patch is an http method that allows partial modifications
-// $set outputs documents that contain all existing fields from the input documents and newly added fields.
-app.patch('/:coffee_id', async (req, res) => {
-    try {
-        const updatedCoffeeEntry = await coffeeModel.updateOne({_id: req.params.id}, //the second arg is what we update
-            {$set: {title: req.body.title}})
-        res.json(updatedCoffeeEntry);
-    }
-    catch(err) {
-        res.json({message: err});
-    }
-})
 
 
 module.exports = app;

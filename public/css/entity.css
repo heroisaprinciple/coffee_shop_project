@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css?family=Inter');
+@import url('https://fonts.googleapis.com/css?family=Manrope');
+
+:root {
+    --white: white;
+    --monospaced: Monospaced, sans-serif;
+}
+body {
+    background-color: #2C5364;
+}
+
+.entity_info {
+
+}
+.head_info .entity_heading {
+    color: var(--white);
+    font-family: var(--monospaced);
+    font-size: 300%;
+    font-weight: 600;
+}
+
+.entity_info .entity_obj {
+    color: var(--white);
+    font-family: var(--monospaced);
+    font-weight: 200;
+}
