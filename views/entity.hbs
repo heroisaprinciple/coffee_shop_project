@@ -1,13 +1,18 @@
 <div class="entity_info">
         {{#each data}}
-            <h2 class="entity_heading">All information about {{this.title}}</h2>
+            <h2 class="entity_heading">All information about: {{this.title}}</h2>
             <p class="entity_title"> {{this.title}} </p>
             <img src="{{this.img}}">
-            <p class="entity_size"> size: {{this.size}} </p>
-            <p class="entity_desc"> description: {{this.description}} </p>
-            <p class="entity_ing"> ingredients: {{ this.ingredients }} </p>
-            <p class="entity_price"> price: {{this.price}} </p>
-
+            <div class="right">
+                <p class="entity_size"> size: {{this.size}} </p>
+                <p class="entity_desc"> description: {{this.description}} </p>
+                <p class="entity_ing"> ingredients: {{ this.ingredients }} </p>
+                <p class="entity_price"> price: {{this.price}} </p>
+            </div>
         {{/each}}
+</div>
+
+<div class="order_button">
+    <input type="submit" value="order">
 </div>
 

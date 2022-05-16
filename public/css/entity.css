@@ -5,22 +5,52 @@
     --white: white;
     --monospaced: Monospaced, sans-serif;
 }
+
+/*TODO: USE THIS COLOR for discount
+body {*/
+/*    background: #4568DC;  !* fallback for old browsers *!*/
+/*    background: -webkit-linear-gradient(to right, #B06AB3, #4568DC);  !* Chrome 10-25, Safari 5.1-6 *!*/
+/*    background: linear-gradient(to right, #B06AB3, #4568DC); !* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ *!*/
+/*}*/
+
 body {
-    background-color: #2C5364;
+    background-color: #191919;
 }
 
-.entity_info {
-
-}
-.head_info .entity_heading {
+.entity_info .entity_heading {
     color: var(--white);
     font-family: var(--monospaced);
     font-size: 300%;
     font-weight: 600;
+    margin-bottom: 60px;
+
 }
 
-.entity_info .entity_obj {
+.entity_info  {
     color: var(--white);
     font-family: var(--monospaced);
     font-weight: 200;
+}
+
+.entity_info img {
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+}
+
+.entity_info .entity_title {
+    font-size: 200%;
+    font-weight: 600;
+}
+
+.right {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.order_button {
+
 }
