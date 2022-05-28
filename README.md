@@ -7,5 +7,5 @@ The project made in 2022, May - ...
 2) HTML/CSS
 3) Handlebars
 4) Stripe (Accepting Payments)
-5) 
+5) JWT
 

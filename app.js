@@ -9,23 +9,32 @@ TODO:
  */
 
 // The Golden Rule of Node: import YOUR OWN modules before importing NPM one
+
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 const paymentObj = require('./payment.js');
 console.log(paymentObj.public, paymentObj.secret);
 
+//schemas and model files
 const coffeeModel = require('./schemas/coffee_mod.js');
-const clientModel = require('./schemas/client_mod');
-const employeeModel = require('./schemas/employees_mod');
-const dessertModel = require('./schemas/dessert_mod');
-const shopModel = require('./schemas/black_white_mod');
-const bodyParser = require('body-parser');
+const clientModel = require('./schemas/client_mod.js');
+const employeeModel = require('./schemas/employees_mod.js');
+const dessertModel = require('./schemas/dessert_mod.js');
+const shopModel = require('./schemas/black_white_mod.js');
+const cartModel = require('./schemas/cart_model.js');
+const orderModel = require('./schemas/order_model.js');
+
+// other files
+const userAuth = require('./auth.js');
 
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-
+const uniqueValidator = require('mongoose-unique-validator');
+//To generate and validate hashes, we'll use the pbkdf2 algorithm from the crypto library that comes with Node.
+const crypto = require('crypto');
+const bodyParser = require('body-parser');
 const cors = require("cors");
 const { engine } = require('express-handlebars');
 const path = require("path");
@@ -98,6 +107,16 @@ app.get('/:url', (req, res) => {
     })
 })
 
+app.get('/register', (req, res) => {
+    try {
+        res.render('register', {
+            style: 'register.css'
+        })
+    }
+    catch (err) {
+        console.log(err);
+    }
+})
 
 
 module.exports = app;
