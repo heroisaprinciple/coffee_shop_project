@@ -1,9 +1,13 @@
 <div class="entity_info">
         {{#each data}}
+            <p class="name">
+                <a href="/">The Black&White Production</a></p>
             <h2 class="entity_heading">All information about: {{this.title}}</h2>
             <p class="entity_title"> {{this.title}} </p>
-            <img src="{{this.img}}">
-            <div class="right">
+            <div class="image_block">
+                <img src="{{this.img}}">
+            </div>
+            <div class="left">
                 <p class="entity_size"> size: {{this.size}} </p>
                 <p class="entity_desc"> description: {{this.description}} </p>
                 <p class="entity_ing"> ingredients: {{ this.ingredients }} </p>

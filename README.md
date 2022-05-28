@@ -6,6 +6,6 @@ The project made in 2022, May - ...
 1) Node.js + Express
 2) HTML/CSS
 3) Handlebars
-4) 
+4) Stripe (Accepting Payments)
 5) 
 
