@@ -22,8 +22,10 @@ Add to package.json:
 
 Run `npm run`
 
+The full instruction: https://webdesign.tutsplus.com/tutorials/watch-and-compile-sass-in-five-quick-steps--cms-28275
+
 2. To compile automatically, use a File Watcher (a great video instruction): 
 
     https://www.youtube.com/watch?v=u1GZVdQyeRc
 
-##### AND BE VERY CAREFUL WITH `<link>` in .hbs files. You may change the linkmanually for each file.
+##### AND BE VERY CAREFUL WITH `<link>` in .hbs files. You may change the link manually for each file.
