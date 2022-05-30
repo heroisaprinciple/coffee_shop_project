@@ -98,7 +98,7 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
     try {
         res.render('register', {
-            style: './preprocessors/register.scss'
+            style: 'register.css'
         })
     }
     catch (err) {

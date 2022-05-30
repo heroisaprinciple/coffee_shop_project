@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "The Black&White Production",
   "start": "nodemon app.js",
+  "scripts" : {
+    "scss": "node-sass --watch scss -o css"
+},
   "dependencies": {
     "body-parser": "^1.20.0",
     "cors": "2.8.5",
