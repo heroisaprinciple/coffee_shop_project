@@ -10,6 +10,7 @@ TODO:
 
 // The Golden Rule of Node: import YOUR OWN modules before importing NPM one
 
+//if env file vars are undefined
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
@@ -93,24 +94,11 @@ app.get('/', (req, res) => {
 //     next();
 // });
 
-app.get('/:url', (req, res) => {
-    coffeeModel.find({ url: req.params.url })
-        .select({_id: 0}).lean()
-        .exec((err, entityObject) => {
-        if (err) { console.log(err); }
-        else {
-            res.render('entity', {
-                style: 'entity.css',
-                data: entityObject
-            })
-        }
-    })
-})
 
 app.get('/register', (req, res) => {
     try {
         res.render('register', {
-            style: 'register.css'
+            style: './preprocessors/register.scss'
         })
     }
     catch (err) {
@@ -118,7 +106,24 @@ app.get('/register', (req, res) => {
     }
 })
 
+app.get('/account', (req, res) => {
+    res.render('account');
+})
 
+//params are last
+app.get('/:url', (req, res) => {
+    coffeeModel.find({ url: req.params.url })
+        .select({_id: 0}).lean()
+        .exec((err, entityObject) => {
+            if (err) { console.log(err); }
+            else {
+                res.render('entity', {
+                    style: 'entity.css',
+                    data: entityObject
+                })
+            }
+        })
+})
 module.exports = app;
 
 // if already in use, but no signs of server running:

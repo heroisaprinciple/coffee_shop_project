@@ -4,7 +4,7 @@ The project made in 2022, May - ...
 ## Technologies used:
 
 1) Node.js + Express
-2) HTML/CSS
+2) HTML/CSS, Preprocessors (SCSS)
 3) Handlebars
 4) Stripe (Accepting Payments)
 5) JWT
