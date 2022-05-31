@@ -63,6 +63,7 @@ Use the :focus selector to do something with the input field when it gets focus:
     border-radius: 15px;
     padding: 5px 10px 5px 10px;
     font-family: Manrope, sans-serif;
+    transition: all 200ms ease-in-out;
 }
 
 .enter_input input:hover {
