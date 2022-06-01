@@ -41,6 +41,10 @@ const cors = require("cors");
 const { engine } = require('express-handlebars');
 const path = require("path");
 const validator = require('validator');
+const flash = require('express-flash');
+const session = require('express-session');
+const {validationResult} = require("express-validator");
+
 
 app.set('view engine', 'hbs');
 
@@ -122,7 +126,12 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
     try {
         //asset makes a field validated
         req.assert('firstname', 'Name is required').isEmpty();
+        req.assert('lastname', 'Last Name is required').isEmpty();
         req.assert('email', 'Not valid email').isEmail();
+        req.assert('phone', 'Not valid phone number').;
+        req.assert('password', 'A password should be at least 7 chars long').isLength({ min: 7} );
+        // Finds the validation errors in this request and wraps them in an object with handy functions
+        const errors = validationResult(req);
         const savedUser = newUser.save();
         res.sendStatus(201).json({savedUser});
     }
