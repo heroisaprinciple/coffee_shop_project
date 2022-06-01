@@ -1,14 +1,33 @@
 @import url("https://fonts.googleapis.com/css?family=Manrope");
-h2 {
-  color: white;
+body {
+  font-family: Monospaced, sans-serif;
+  /* LABEL ======================================= */
+  /* active state */
+  /* BOTTOM BARS ================================= */
+  /* active state */
+  /* HIGHLIGHTER ================================== */
+  /* active state */
+  /* ANIMATIONS ================ */
 }
-
-.group {
+body h1 {
+  background: rgb(238, 174, 202);
+  background: linear-gradient(90deg, rgb(238, 174, 202) 0%, rgb(148, 187, 233) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  font-size: 70px;
+  margin: 80px;
+  text-align: center;
+}
+body .register_form {
+  display: flex;
+  justify-content: center;
+}
+body .group {
   position: relative;
   margin-bottom: 45px;
 }
-
-input {
+body .group input {
   font-size: 18px;
   padding: 10px 10px 10px 5px;
   display: block;
@@ -16,13 +35,10 @@ input {
   border: none;
   border-bottom: 1px solid #757575;
 }
-
-input:focus {
+body .group input:focus {
   outline: none;
 }
-
-/* LABEL ======================================= */
-label {
+body label {
   color: #999;
   font-size: 18px;
   font-weight: normal;
@@ -34,22 +50,17 @@ label {
   -moz-transition: 0.2s ease all;
   -webkit-transition: 0.2s ease all;
 }
-
-/* active state */
-input:focus ~ label, input:valid ~ label {
+body .group input:focus ~ label, body .group input:valid ~ label {
   top: -20px;
   font-size: 14px;
   color: #5264AE;
 }
-
-/* BOTTOM BARS ================================= */
-.bar {
+body .bar {
   position: relative;
   display: block;
   width: 300px;
 }
-
-.bar:before, .bar:after {
+body .bar:before, body .bar:after {
   content: "";
   height: 2px;
   width: 0;
@@ -60,22 +71,16 @@ input:focus ~ label, input:valid ~ label {
   -moz-transition: 0.2s ease all;
   -webkit-transition: 0.2s ease all;
 }
-
-.bar:before {
+body .bar:before {
   left: 50%;
 }
-
-.bar:after {
+body .bar:after {
   right: 50%;
 }
-
-/* active state */
-input:focus ~ .bar:before, input:focus ~ .bar:after {
+body .group input:focus ~ .bar:before, body .group input:focus ~ .bar:after {
   width: 50%;
 }
-
-/* HIGHLIGHTER ================================== */
-.highlight {
+body .highlight {
   position: absolute;
   height: 60%;
   width: 100px;
@@ -84,15 +89,11 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
   pointer-events: none;
   opacity: 0.5;
 }
-
-/* active state */
-input:focus ~ .highlight {
+body .group input:focus ~ .highlight {
   -webkit-animation: inputHighlighter 0.3s ease;
   -moz-animation: inputHighlighter 0.3s ease;
   animation: inputHighlighter 0.3s ease;
 }
-
-/* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
   from {
     background: #5264AE;
@@ -120,29 +121,34 @@ input:focus ~ .highlight {
     background: transparent;
   }
 }
-.register_button {
-  display: inline;
-  margin: 0 0 0 2%;
+body .register_button {
+  display: flex;
+  justify-content: center;
+  margin-left: 80px;
 }
-
-.register_button #register {
+body .register_button #register {
   border: none;
-  border-radius: 15px;
-  padding: 5px 10px 5px 10px;
+  border-radius: 30px;
+  padding: 15px;
   font-family: Manrope, sans-serif;
+  width: 100px;
+  transition: all 200ms ease-in-out;
+  margin-right: 20px;
 }
-.register_button p {
+body .register_button p {
   font-family: Manrope, sans-serif;
-  font-weight: 200;
+  font-weight: 70;
+  font-size: 15px;
+  color: #757575;
+  align-self: center;
 }
-.register_button #accept {
-  display: block;
+body .register_button #accept {
+  align-self: center;
 }
-
-.order_button #register:hover {
+body .register_button #register:hover {
   border: none;
   color: white;
-  background-color: darkslategrey;
+  background-color: #5264AE;
 }
 
 /*# sourceMappingURL=register.css.map */

@@ -25,6 +25,7 @@ const dessertModel = require('./schemas/dessert_mod.js');
 const shopModel = require('./schemas/black_white_mod.js');
 const cartModel = require('./schemas/cart_model.js');
 const orderModel = require('./schemas/order_model.js');
+const userModel = require("./schemas/client_mod");
 
 // other files
 const userAuth = require('./auth.js');
@@ -39,6 +40,8 @@ const bodyParser = require('body-parser');
 const cors = require("cors");
 const { engine } = require('express-handlebars');
 const path = require("path");
+const validator = require('validator');
+
 app.set('view engine', 'hbs');
 
 // to serve static assets (css files)
@@ -98,11 +101,33 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
     try {
         res.render('register', {
-            style: 'register.css'
+            style: 'register.css',
+            script: 'register.js'
         })
     }
     catch (err) {
         console.log(err);
+    }
+})
+
+app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
+    const newUser = new userModel({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        //validation is important
+        email: req.body.email,
+        phone: req.body.phone,
+        password: req.body.password
+    })
+    try {
+        //asset makes a field validated
+        req.assert('firstname', 'Name is required').isEmpty();
+        req.assert('email', 'Not valid email').isEmail();
+        const savedUser = newUser.save();
+        res.sendStatus(201).json({savedUser});
+    }
+    catch(err) {
+        res.sendStatus(500).json(err)
     }
 })
 
