@@ -128,7 +128,17 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
         req.assert('firstname', 'Name is required').isEmpty();
         req.assert('lastname', 'Last Name is required').isEmpty();
         req.assert('email', 'Not valid email').isEmail();
-        req.assert('phone', 'Not valid phone number').;
+
+        //if phone number doesn't match the reg, alert('Not valid phone num')
+        const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
+        if (req.body.phone.match(regNum)) {
+            return true;
+        }
+        else {
+            alert('Not valid phone number');
+        }
+
+        //TODO: make password field required with one capital letter, min 7 length, one symbol and one number
         req.assert('password', 'A password should be at least 7 chars long').isLength({ min: 7} );
         // Finds the validation errors in this request and wraps them in an object with handy functions
         const errors = validationResult(req);
