@@ -153,19 +153,19 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
         const errors = validationResult(req);
         userModel.create(newUser, (err, data) => {
             if (!err) {
-                res.sendStatus(201).json({data});
-                console.log(data);
+                res.json({data});
+                //console.log(data);
             }
         })
     }
     catch(err) {
-        res.sendStatus(500).json(err)
+        res.json(err);
     }
 })
 
-// app.get('/account', (req, res) => {
-//     res.render('account');
-// })
+app.get('/account', (req, res) => {
+    res.render('account');
+})
 
 //params are last
 app.get('/:url', (req, res) => {
