@@ -148,9 +148,9 @@ body {
   }
 
   .register_button {
-    display: flex;
-    justify-content: center;
-    margin-left: 80px;
+    margin: 0 auto;
+    text-align: center;
+    padding-left: 80px;
   }
 
   .register_button {
@@ -169,11 +169,11 @@ body {
       font-weight: 70;
       font-size: 15px;
       color: #757575;
-      align-self: center;
+      display: inline;
     }
 
     #accept {
-      align-self: center;
+      display: inline;
     }
   }
 

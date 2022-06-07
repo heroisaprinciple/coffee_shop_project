@@ -124,13 +124,16 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
         password: req.body.password
     })
     try {
-        //asset makes a field validated
+        //assert makes a field validated
         req.assert('firstname', 'Name is required').isEmpty();
         req.assert('lastname', 'Last Name is required').isEmpty();
         req.assert('email', 'Not valid email').isEmail();
 
         //if phone number doesn't match the reg, alert('Not valid phone num')
         const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
+        //if password doesn't match the reg, alert('Not valid password: minimum 8 characters, at least
+        // one uppercase, one undercase, one number, one symbol, no spaces');
+        const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
         if (req.body.phone.match(regNum)) {
             return true;
         }
@@ -138,21 +141,31 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
             alert('Not valid phone number');
         }
 
-        //TODO: make password field required with one capital letter, min 7 length, one symbol and one number
-        req.assert('password', 'A password should be at least 7 chars long').isLength({ min: 7} );
+        if (req.body.password.match(regPassword)) {
+            return true;
+        }
+        else {
+            alert(`Not valid password: minimum 8 characters, at least  one uppercase, one undercase, one number, 
+            one symbol, no spaces`);
+        }
+
         // Finds the validation errors in this request and wraps them in an object with handy functions
         const errors = validationResult(req);
-        const savedUser = newUser.save();
-        res.sendStatus(201).json({savedUser});
+        userModel.create(newUser, (err, data) => {
+            if (!err) {
+                res.sendStatus(201).json({data});
+                console.log(data);
+            }
+        })
     }
     catch(err) {
         res.sendStatus(500).json(err)
     }
 })
 
-app.get('/account', (req, res) => {
-    res.render('account');
-})
+// app.get('/account', (req, res) => {
+//     res.render('account');
+// })
 
 //params are last
 app.get('/:url', (req, res) => {

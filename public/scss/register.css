@@ -122,9 +122,9 @@ body .group input:focus ~ .highlight {
   }
 }
 body .register_button {
-  display: flex;
-  justify-content: center;
-  margin-left: 80px;
+  margin: 0 auto;
+  text-align: center;
+  padding-left: 80px;
 }
 body .register_button #register {
   border: none;
@@ -140,10 +140,10 @@ body .register_button p {
   font-weight: 70;
   font-size: 15px;
   color: #757575;
-  align-self: center;
+  display: inline;
 }
 body .register_button #accept {
-  align-self: center;
+  display: inline;
 }
 body .register_button #register:hover {
   border: none;
