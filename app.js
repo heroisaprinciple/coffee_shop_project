@@ -120,6 +120,7 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
+    // do email validation, if email exists in db...
     const newUser = new userModel({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -142,33 +143,30 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
         //if password doesn't match the reg, alert('Not valid password: minimum 8 characters, at least
         // one uppercase, one undercase, one number, one symbol, no spaces');
         const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
-        if (req.body.phone.match(regNum)) {
-            return true;
-        }
-        else {
+        if (!req.body.phone.match(regNum)) {
+            //render other hbs file with error
+            // no alert exists
             alert('Not valid phone number');
         }
 
-        if (req.body.password.match(regPassword)) {
-            return true;
-        }
-        else {
+        if (!req.body.password.match(regPassword)) {
             alert(`Not valid password: minimum 8 characters, at least  one uppercase, one undercase, one number, 
             one symbol, no spaces`);
         }
 
         // Finds the validation errors in this request and wraps them in an object with handy functions
         const errors = validationResult(req);
-        db.clientschema.save({newUser});
+        newUser.save();
+
+        res.redirect('/account');
         res.json({newUser});
    
-        res.json(err);
         console.log('олег у меня еще больше лапок');
 })
 
-// app.get('/account', (req, res) => {
-//     res.render('account');
-// })
+app.get('/account', (req, res) => {
+    res.render('account');
+})
 
 //params are last
 app.get('/:url', (req, res) => {
