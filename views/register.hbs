@@ -7,7 +7,7 @@
 
 <h1>Registration</h1>
 <div class="register_form">
-    <form action="/account" method="post" target="_blank" id="reg_form">
+    <form action="/account" method="post" id="reg_form">
 
         <div class="group">
             <input id="first_name" type="text" name="first_name">
@@ -44,13 +44,17 @@
             <label for="password" class="password">Password</label>
         </div>
 
+    <div class="register_button">
+        <input id="register" type="submit" value="register">
+        <p>* By registering, you accept our policy</p>
+        <input id="accept" type="radio" name="accept">
+    </div>
+    
     </form>
 </div>
 
-<div class="register_button">
-<form action="/account" method="post">
+{{!-- <div class="register_button">
     <input id="register" type="submit" value="register">
     <p>* By registering, you accept our policy</p>
     <input id="accept" type="radio" name="accept">
-</form>
-</div>
+</div> --}}

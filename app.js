@@ -14,8 +14,11 @@ TODO:
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
+console.log("ENV: ")
+console.log(process.env.STRIPE_SECRET_KEY)
+console.log(process.env.STRIPE_PUBLIC_KEY)
 const paymentObj = require('./payment.js');
-console.log(paymentObj.public, paymentObj.secret);
+//console.log(paymentObj.public, paymentObj.secret);
 
 //schemas and model files
 const coffeeModel = require('./schemas/coffee_mod.js');
@@ -43,7 +46,9 @@ const path = require("path");
 const validator = require('validator');
 const flash = require('express-flash');
 const session = require('express-session');
-const {validationResult} = require("express-validator");
+const {body, validationResult} = require("express-validator");
+const assert = require("assert");
+const { db } = require('./schemas/coffee_mod.js');
 
 
 app.set('view engine', 'hbs');
@@ -123,11 +128,14 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
         phone: req.body.phone,
         password: req.body.password
     })
-    try {
+    
         //assert makes a field validated
-        req.assert('firstname', 'Name is required').isEmpty();
-        req.assert('lastname', 'Last Name is required').isEmpty();
-        req.assert('email', 'Not valid email').isEmail();
+        body('firstname', 'Name is required').isEmpty();
+        body('lastname', 'Last Name is required').isEmpty();
+        body('email', 'Not valid email').isEmail();
+
+        console.log('damn lapki');
+        console.log(req.body);
 
         //if phone number doesn't match the reg, alert('Not valid phone num')
         const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
@@ -151,21 +159,16 @@ app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
 
         // Finds the validation errors in this request and wraps them in an object with handy functions
         const errors = validationResult(req);
-        userModel.create(newUser, (err, data) => {
-            if (!err) {
-                res.json({data});
-                //console.log(data);
-            }
-        })
-    }
-    catch(err) {
+        db.clientschema.save({newUser});
+        res.json({newUser});
+   
         res.json(err);
-    }
+        console.log('олег у меня еще больше лапок');
 })
 
-app.get('/account', (req, res) => {
-    res.render('account');
-})
+// app.get('/account', (req, res) => {
+//     res.render('account');
+// })
 
 //params are last
 app.get('/:url', (req, res) => {

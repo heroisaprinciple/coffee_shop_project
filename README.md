@@ -29,3 +29,8 @@ The full instruction: https://webdesign.tutsplus.com/tutorials/watch-and-compile
     https://www.youtube.com/watch?v=u1GZVdQyeRc
 
 ##### AND BE VERY CAREFUL WITH `<link>` in .hbs files. You may change the link manually for each file.
+
+## To debug:
+
+1) You may need use console.log() everywhere in callbacks and requests. As you want.
+2) In try/catch block in order to see an error or what is wrong, just delete try/catch statements. Then, in your browser you might see the error. 
