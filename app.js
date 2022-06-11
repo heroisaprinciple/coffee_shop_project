@@ -41,14 +41,14 @@ const uniqueValidator = require('mongoose-unique-validator');
 const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const cors = require("cors");
-const { engine } = require('express-handlebars');
+const {engine} = require('express-handlebars');
 const path = require("path");
 const validator = require('validator');
 const flash = require('express-flash');
 const session = require('express-session');
 const {body, validationResult} = require("express-validator");
 const assert = require("assert");
-const { db } = require('./schemas/coffee_mod.js');
+const {db} = require('./schemas/coffee_mod.js');
 
 
 app.set('view engine', 'hbs');
@@ -65,13 +65,16 @@ app.engine('.hbs', engine({
 
 //TODO: do it with env file
 mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-    { useNewUrlParser: true, useUnifiedTopology: true },
+    {useNewUrlParser: true, useUnifiedTopology: true},
     (err, data) => {
-        if (err) { console.log('no connection') }
-        else { console.log('connection successful') }
+        if (err) {
+            console.log('no connection')
+        } else {
+            console.log('connection successful')
+        }
     })
 
-
+// SEARCHING FOR AN ENTITY
 app.get('/', (req, res) => {
     //if no params, we'll show products
     if (req.query.search) {
@@ -87,12 +90,10 @@ app.get('/', (req, res) => {
                         res.render("search", {data: data});
                     }
                 })
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
         }
-    }
-    else {
+    } else {
         res.render('index', {
             title: 'The Black&White Production',
             style: 'main.css'
@@ -106,75 +107,109 @@ app.get('/', (req, res) => {
 //     next();
 // });
 
-
+//REGISTRATION
 app.get('/register', (req, res) => {
     try {
         res.render('register', {
             style: 'register.css',
             script: 'register.js'
         })
-    }
-    catch (err) {
+    } catch (err) {
         console.log(err);
     }
 })
 
-app.post('/account', bodyParser.urlencoded({ extended: false }), (req, res) => {
-    // do email validation, if email exists in db...
+//POSTING TO DB
+app.post('/account', bodyParser.urlencoded({extended: false}), (req, res) => {
     const newUser = new userModel({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
-        //validation is important
         email: req.body.email,
         phone: req.body.phone,
         password: req.body.password
     })
-    
-        //assert makes a field validated
-        body('firstname', 'Name is required').isEmpty();
-        body('lastname', 'Last Name is required').isEmpty();
-        body('email', 'Not valid email').isEmail();
 
-        console.log('damn lapki');
-        console.log(req.body);
+    //VALIDATION IS IMPORTANT
 
-        //if phone number doesn't match the reg, alert('Not valid phone num')
+    //The body function will only validate req.body and takes two arguments.
+    // First is the property name. Second is your custom message that will be shown if validation fails.
+    // If you don’t provide a custom message, then the default message will be used.
+    body('firstname', 'Name Is Required').isEmpty();
+    body('lastname', 'Last Name Is Required').isEmpty();
+    body('email', 'Not Valid Email').exists().isEmail().normalizeEmail().custom(userEmail => {
+        return userModel.find({
+            email: userEmail
+        }).then(email => {
+            if (email.length > 0) {
+                return Promise.reject('Username is already in use. Please, login then.')
+            }
+        })
+    });
+
+    console.log('The user: ');
+    console.log(req.body);
+
+    console.log('outside the number validation')
+    body('phone', 'Invalid Phone Number').isNumeric().custom(() => {
+        console.log('in phone validation')
         const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
-        //if password doesn't match the reg, alert('Not valid password: minimum 8 characters, at least
-        // one uppercase, one undercase, one number, one symbol, no spaces');
-        const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
         if (!req.body.phone.match(regNum)) {
-            //render other hbs file with error
-            // no alert exists
-            alert('Not valid phone number');
+            console.log('Not Valid Phone Num');
+            return false;
+        } else {
+            res.json({newUser});
         }
+    })
 
-        if (!req.body.password.match(regPassword)) {
-            alert(`Not valid password: minimum 8 characters, at least  one uppercase, one undercase, one number, 
-            one symbol, no spaces`);
+    console.log('outside of body vaidation')
+    body('password', 'Invalid Pasword. Please, use minimum 8 characters, at least' +
+        'one uppercase, one undercase, one number, one symbol, no spaces').custom(() => {
+        console.log('in password validation')
+        const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
+        if (!req.body.pass.match(regPassword)) {
+            console.log('Not Valid Password');
+            return false;
+        } else {
+            res.json({newUser});
         }
+    })
 
-        // Finds the validation errors in this request and wraps them in an object with handy functions
-        const errors = validationResult(req);
-        newUser.save();
+    //if password doesn't match the reg, alert('Not valid password: minimum 8 characters, at least
+    // one uppercase, one undercase, one number, one symbol, no spaces');
+    // const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
+    // if (!req.body.phone.match(regNum)) {
+    //     //render other hbs file with error
+    //     // no alert exists
+    //     alert('Not valid phone number');
+    //     console.log('not valid phone num');
+    // }
 
-        res.redirect('/account');
-        res.json({newUser});
-   
-        console.log('олег у меня еще больше лапок');
+    // if (!req.body.password.match(regPassword)) {
+    //     alert(`Not valid password: minimum 8 characters, at least  one uppercase, one undercase, one number,
+    //     one symbol, no spaces`);
+    //     console.log('yobana v rot, ti chto delaesh, use one at least one uppercase, one undercase, one number,' +
+    //         ' one symbol, no spaces');
+    // }
+
+    newUser.save();
+    //REDIRECT TO ANOTHER PAGE AND SEE INFO
+    res.redirect('/account');
+    console.log('user is saved');
 })
 
+//PERSONAL CABINET PAGE
 app.get('/account', (req, res) => {
     res.render('account');
 })
 
 //params are last
 app.get('/:url', (req, res) => {
-    coffeeModel.find({ url: req.params.url })
+    coffeeModel.find({url: req.params.url})
         .select({_id: 0}).lean()
         .exec((err, entityObject) => {
-            if (err) { console.log(err); }
-            else {
+            if (err) {
+                console.log(err);
+            } else {
                 res.render('entity', {
                     style: 'entity.css',
                     data: entityObject
@@ -188,6 +223,8 @@ module.exports = app;
 // lsof -i:3000
 // kill -9 [PID]
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () => { console.log(`Listening on ${port}.....`)});
+const server = app.listen(port, () => {
+    console.log(`Listening on ${port}.....`)
+});
 
 module.exports = server;
