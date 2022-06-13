@@ -38,4 +38,6 @@ The full instruction: https://webdesign.tutsplus.com/tutorials/watch-and-compile
 
 1) You may need use console.log() everywhere in callbacks and requests. As you want.
 2) In try/catch block in order to see an error or what is wrong, just delete try/catch statements. Then, in your browser
-   you might see the error. 
+   you might see the error.
+3) You may put breakpoints and start debugging in the IDE, then do some actions in the browser (like fill
+   the form and click button to send data to server) and then do F7, F8 to go into/go over into next block in debugging.
