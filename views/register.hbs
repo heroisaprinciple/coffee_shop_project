@@ -2,18 +2,15 @@
     <meta charset="UTF-8">
     <title>{{title}} </title>
     <link rel="stylesheet" href="scss/{{style}}">
-    <!--    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>-->
-    <!--    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>-->
     <script src="js/{{script}}"></script>
 </head>
 
 <h1>Registration</h1>
 <div class="register_form">
-    <form action="/account" method="post" id="reg_form">
-
+    <form action="/account" method="post" id="reg_form" onsubmit="nonValidMessage()">
         <div class="group">
             <input id="first_name" type="text" name="first_name">
-            <span id="not_valid"></span>
+            <span class="not_valid"></span>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label for="first_name" class="first_name">First Name</label>
@@ -21,7 +18,7 @@
 
         <div class="group">
             <input id="last_name" type="text" name="last_name">
-            <span id="not_valid"></span>
+            <span class="not_valid"></span>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label for="last_name" class="last_name">Last Name</label>
@@ -29,6 +26,7 @@
 
         <div class="group">
             <input id="email" type="email" name="email">
+            <span class="not_valid"></span>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label for="email" class="email">Email</label>
@@ -36,7 +34,7 @@
 
         <div class="group">
             <input id="phone" type="number" name="phone">
-            <span id="not_valid"></span>
+            <span class="not_valid"></span>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label for="phone" class="phone">Phone Number</label>
@@ -44,14 +42,14 @@
 
         <div class="group">
             <input id="password" type="password" name="password">
-            <span id="not_valid"></span>
+            <span class="not_valid"></span>
             <span class="highlight"></span>
             <span class="bar"></span>
             <label for="password" class="password">Password</label>
         </div>
 
         <div class="register_button">
-            <input id="register" type="submit" value="register" onclick="nonValidMessage()">
+            <input id="register" type="submit" value="register">
             <p>* By registering, you accept our policy</p>
             <input id="accept" type="radio" name="accept">
         </div>

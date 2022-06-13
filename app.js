@@ -120,82 +120,63 @@ app.get('/register', (req, res) => {
 })
 
 //POSTING TO DB
-app.post('/account', bodyParser.urlencoded({extended: false}), (req, res) => {
-    const newUser = new userModel({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        phone: req.body.phone,
-        password: req.body.password
-    })
-
-    //VALIDATION IS IMPORTANT
-
-    //The body function will only validate req.body and takes two arguments.
-    // First is the property name. Second is your custom message that will be shown if validation fails.
-    // If you don’t provide a custom message, then the default message will be used.
-    body('firstname', 'Name Is Required').isEmpty();
-    body('lastname', 'Last Name Is Required').isEmpty();
+app.post('/account', bodyParser.urlencoded({extended: false}),
+    /* if we have .custom, then there is no necessity in
+    having the second parameter in the body
+     */
+    body('firstname', 'Name Is Required').isEmpty(),
+    body('lastname', 'Last Name Is Required').isEmpty(),
     body('email', 'Not Valid Email').exists().isEmail().normalizeEmail().custom(userEmail => {
         return userModel.find({
             email: userEmail
         }).then(email => {
             if (email.length > 0) {
-                return Promise.reject('Username is already in use. Please, login then.')
+                return Promise.reject('Username is already in use. Please, login then.');
             }
         })
-    });
-
-    console.log('The user: ');
-    console.log(req.body);
-
-    console.log('outside the number validation')
-    body('phone', 'Invalid Phone Number').isNumeric().custom(() => {
+    }),
+    body('phone').isNumeric().custom((num) => {
         console.log('in phone validation')
         const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
-        if (!req.body.phone.match(regNum)) {
+        if (!num.match(regNum)) {
             console.log('Not Valid Phone Num');
-            return false;
+            throw new Error(`Invalid Phone Number`);
         } else {
-            res.json({newUser});
+            return true;
         }
-    })
-
-    console.log('outside of body vaidation')
-    body('password', 'Invalid Pasword. Please, use minimum 8 characters, at least' +
-        'one uppercase, one undercase, one number, one symbol, no spaces').custom(() => {
-        console.log('in password validation')
+    }),
+    body('password').custom((pass) => {
         const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
-        if (!req.body.pass.match(regPassword)) {
-            console.log('Not Valid Password');
-            return false;
+        if (!pass.match(regPassword)) {
+            throw new Error(`Invalid Pasword. Please, use minimum 8 characters, at least
+            one uppercase, one undercase, one number, one symbol, no spaces`);
         } else {
-            res.json({newUser});
+            return true;
         }
+    }),
+    (req, res) => {
+        const newUser = new userModel({
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
+            email: req.body.email,
+            phone: req.body.phone,
+            password: req.body.password
+        })
+
+        console.log('The user: ');
+        console.log(req.body);
+
+        //until you call the func validationRes(), there is no validation happen
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()});
+        }
+
+        newUser.save();
+        //REDIRECT TO ANOTHER PAGE AND SEE INFO
+        res.redirect('/account');
+        console.log('user is saved');
     })
-
-    //if password doesn't match the reg, alert('Not valid password: minimum 8 characters, at least
-    // one uppercase, one undercase, one number, one symbol, no spaces');
-    // const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
-    // if (!req.body.phone.match(regNum)) {
-    //     //render other hbs file with error
-    //     // no alert exists
-    //     alert('Not valid phone number');
-    //     console.log('not valid phone num');
-    // }
-
-    // if (!req.body.password.match(regPassword)) {
-    //     alert(`Not valid password: minimum 8 characters, at least  one uppercase, one undercase, one number,
-    //     one symbol, no spaces`);
-    //     console.log('yobana v rot, ti chto delaesh, use one at least one uppercase, one undercase, one number,' +
-    //         ' one symbol, no spaces');
-    // }
-
-    newUser.save();
-    //REDIRECT TO ANOTHER PAGE AND SEE INFO
-    res.redirect('/account');
-    console.log('user is saved');
-})
 
 //PERSONAL CABINET PAGE
 app.get('/account', (req, res) => {
