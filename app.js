@@ -14,9 +14,6 @@ TODO:
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
-console.log("ENV: ")
-console.log(process.env.STRIPE_SECRET_KEY)
-console.log(process.env.STRIPE_PUBLIC_KEY)
 const paymentObj = require('./payment.js');
 //console.log(paymentObj.public, paymentObj.secret);
 
@@ -56,12 +53,7 @@ app.set('view engine', 'hbs');
 // to serve static assets (css files)
 app.use(cors());
 app.use(express.static('public'));
-app.engine('.hbs', engine({
-    extname: ".hbs",
-    defaultLayout: "main",
-    // a path to all other layouts
-    layoutsDir: path.join(__dirname, 'views/layouts')
-}))
+app.use(express.json());
 
 //TODO: do it with env file
 mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
@@ -87,45 +79,28 @@ app.get('/', (req, res) => {
                 .select({_id: 0}).lean()
                 .exec((err, data) => {
                     if (data) {
-                        res.render("search", {data: data});
+                        return res.json(data);
                     }
                 })
         } catch (err) {
             console.log(err);
         }
     } else {
-        res.render('index', {
-            title: 'The Black&White Production',
-            style: 'main.css'
-        })
+        coffeeModel.find({}, (err, data) => {
+            return res.json(data);
+        });
     }
 });
 
-//middleware runs for every request, if not specify next()
-// app.use(function (req, res, next) {
-//     console.log("Middleware called");
-//     next();
-// });
-
-//REGISTRATION
-app.get('/register', (req, res) => {
-    try {
-        res.render('register', {
-            style: 'register.css',
-            script: 'register.js'
-        })
-    } catch (err) {
-        console.log(err);
-    }
-})
-
 //POSTING TO DB
-app.post('/account', bodyParser.urlencoded({extended: false}),
+
+//TODO: post for coffee
+app.post('/account/register', bodyParser.urlencoded({extended: false}),
     /* if we have .custom, then there is no necessity in
     having the second parameter in the body
      */
-    body('firstname', 'Name Is Required').isEmpty(),
-    body('lastname', 'Last Name Is Required').isEmpty(),
+    body('firstname', 'Name Is Required').notEmpty(),
+    body('lastname', 'Last Name Is Required').notEmpty(),
     body('email', 'Not Valid Email').exists().isEmail().normalizeEmail().custom(userEmail => {
         return userModel.find({
             email: userEmail
@@ -136,10 +111,8 @@ app.post('/account', bodyParser.urlencoded({extended: false}),
         })
     }),
     body('phone').isNumeric().custom((num) => {
-        console.log('in phone validation')
         const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
         if (!num.match(regNum)) {
-            console.log('Not Valid Phone Num');
             throw new Error(`Invalid Phone Number`);
         } else {
             return true;
@@ -163,9 +136,7 @@ app.post('/account', bodyParser.urlencoded({extended: false}),
             password: req.body.password
         })
 
-        console.log('The user: ');
-        console.log(req.body);
-
+        console.log(req.body.firstname);
         //until you call the func validationRes(), there is no validation happen
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -174,14 +145,21 @@ app.post('/account', bodyParser.urlencoded({extended: false}),
 
         newUser.save();
         //REDIRECT TO ANOTHER PAGE AND SEE INFO
-        res.redirect('/account');
-        console.log('user is saved');
+        return res.json(newUser);
     })
 
-//PERSONAL CABINET PAGE
-app.get('/account', (req, res) => {
-    res.render('account');
+// deleting the coffee
+// do with postman
+app.delete('/:url', (req, res) => {
+    coffeeModel.deleteOne({url: req.params.url}, (err) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+    });
+    return res.status(200).end();
 })
+
+//PERSONAL CABINET PAGE
 
 //params are last
 app.get('/:url', (req, res) => {
@@ -191,10 +169,7 @@ app.get('/:url', (req, res) => {
             if (err) {
                 console.log(err);
             } else {
-                res.render('entity', {
-                    style: 'entity.css',
-                    data: entityObject
-                })
+                return res.json(entityObject);
             }
         })
 })
