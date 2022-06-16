@@ -3,9 +3,6 @@ TODO:
 1) store connection string into env file
 2) hash the password of the user
 3) Build A Node.js API Authentication With JWT Tutorial
-4) nodemail email sender
-5) how about using sass, not just css?
-6) react bitch
  */
 
 // The Golden Rule of Node: import YOUR OWN modules before importing NPM one
@@ -34,8 +31,6 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
-//To generate and validate hashes, we'll use the pbkdf2 algorithm from the crypto library that comes with Node.
-const crypto = require('crypto');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const {engine} = require('express-handlebars');
@@ -45,6 +40,9 @@ const flash = require('express-flash');
 const session = require('express-session');
 const {body, validationResult} = require("express-validator");
 const assert = require("assert");
+//To generate and validate hashes, we'll use the pbkdf2 algorithm from the crypto library that comes with Node.
+const CryptoJS = require('crypto-js');
+const SHA256 = require("crypto-js/sha256");
 const {db} = require('./schemas/coffee_mod.js');
 
 
@@ -106,7 +104,7 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
             email: userEmail
         }).then(email => {
             if (email.length > 0) {
-                return Promise.reject('Username is already in use. Please, login then.');
+                return Promise.reject('Account is already in use. Please, login then.');
             }
         })
     }),
@@ -133,7 +131,8 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
             lastname: req.body.lastname,
             email: req.body.email,
             phone: req.body.phone,
-            password: req.body.password
+            // to provide us a hash code
+            password: SHA256(req.body.password).toString()
         })
 
         console.log(req.body.firstname);
@@ -148,15 +147,60 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
         return res.json(newUser);
     })
 
+app.post('/coffee/add', bodyParser.urlencoded({extended: false}), (req, res) => {
+    const newCoffee = new coffeeModel({
+        title: req.body.title,
+        size: req.body.size,
+        description: req.body.description,
+        ingredients: req.body.ingredients,
+        price: req.body.price
+    })
+    newCoffee.save((err, data) => {
+        if (err) {
+            return res.status(400).json(err);
+        } else {
+            return res.status(201).json(data);
+        }
+    })
+})
+
+app.post('/account/login', async (req, res) => {
+    //use async/await in case the promise of doc is returned
+    const user = await userModel.findOne({email: req.body.email});
+
+    if (!user) {
+        //always use return res.status()
+        return res.status(401).json('Such user does not exist. Please, try one more time or register.');
+    }
+    // and for login we shall use decryption
+
+    if (user.password !== SHA256(req.body.password).toString()) {
+        return res.status(401).json('Wrong password. Try again.')
+    }
+
+    return res.status(201).json(user);
+})
+
+app.delete('/account/delete', (req, res) => {
+    userModel.deleteOne({email: req.body.email}, (err) => {
+        if (err) {
+            return res.status(500).json(err);
+        } else {
+            return res.status(200).end();
+        }
+    })
+})
+
 // deleting the coffee
 // do with postman
 app.delete('/:url', (req, res) => {
     coffeeModel.deleteOne({url: req.params.url}, (err) => {
         if (err) {
             return res.status(500).json(err);
+        } else {
+            return res.status(200).end();
         }
     });
-    return res.status(200).end();
 })
 
 //PERSONAL CABINET PAGE
@@ -175,9 +219,6 @@ app.get('/:url', (req, res) => {
 })
 module.exports = app;
 
-// if already in use, but no signs of server running:
-// lsof -i:3000
-// kill -9 [PID]
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
     console.log(`Listening on ${port}.....`)
