@@ -27,6 +27,4 @@ For example, you want to set an error status, and send a body with a JSON that e
 first have to set the status (using status), and then send the JSON (using send). If you had already set the status
 with sendStatus, it is no longer possible to send the JSON, because you already used a form of sent.
 
-## PLEASE NEVER DECODE PASSWORDS AND COMPARE THEM TO THE PASSWORD IN `req.body.password` as this is extremely dangerous
-
-## and unsafe! Compare the hash of passwords. 
+## PLEASE NEVER DECODE PASSWORDS AND COMPARE THEM TO THE PASSWORD IN `req.body.password` as this is extremely dangerous and unsafe! Compare the hash of passwords. 
