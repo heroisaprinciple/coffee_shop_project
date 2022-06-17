@@ -1,11 +1,4 @@
-/*
-TODO:
-1) store connection string into env file
-2) hash the password of the user
-3) Build A Node.js API Authentication With JWT Tutorial
- */
-
-// The Golden Rule of Node: import YOUR OWN modules before importing NPM one
+//TODO: authentication
 
 //if env file vars are undefined
 if (process.env.NODE_ENV !== 'production') {
@@ -24,8 +17,6 @@ const cartModel = require('./schemas/cart_model.js');
 const orderModel = require('./schemas/order_model.js');
 const userModel = require("./schemas/client_mod");
 
-// other files
-const userAuth = require('./auth.js');
 
 const express = require('express');
 const app = express();
@@ -35,7 +26,6 @@ const bodyParser = require('body-parser');
 const cors = require("cors");
 const {engine} = require('express-handlebars');
 const path = require("path");
-const validator = require('validator');
 const flash = require('express-flash');
 const session = require('express-session');
 const {body, validationResult} = require("express-validator");
