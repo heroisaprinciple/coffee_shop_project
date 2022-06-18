@@ -137,13 +137,18 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
         return res.json(newUser);
     })
 
-app.post('/coffee/add', bodyParser.urlencoded({extended: false}), (req, res) => {
+app.post('/coffee/add', bodyParser.urlencoded({extended: false}), async (req, res) => {
+    if (!await isUserAdmin(req)) {
+        return res.status(401).end();
+    }
+
     const newCoffee = new coffeeModel({
         title: req.body.title,
         size: req.body.size,
         description: req.body.description,
         ingredients: req.body.ingredients,
-        price: req.body.price
+        price: req.body.price,
+        url: req.body.url
     })
     newCoffee.save((err, data) => {
         if (err) {
@@ -171,7 +176,35 @@ app.post('/account/login', async (req, res) => {
     return res.status(201).json(user);
 })
 
-app.delete('/account/delete', (req, res) => {
+const isUserAdmin = async (req) => {
+    /*
+    1) Base64 because of Basic Authentication
+
+    We don't need 'Basic' in the authorization header, just the base64 login and password (NOT HASHED)
+
+
+     */
+    if (!req.headers.authorization) {
+        return false;
+    }
+    let credentials = CryptoJS.enc.Base64.parse(req.headers.authorization.split(' ')[1]);
+    credentials = credentials.toString(CryptoJS.enc.Utf8);
+
+    let email = credentials.split(':')[0];
+    let password = credentials.split(':')[1];
+
+    //  If we don't use async/await, then the promise is returned. Use async/await
+    //  to make user returned (or use a callback func)
+    let user = await clientModel.findOne({email: email, password: SHA256(password).toString(), isAdmin: true})
+    return user !== null;
+
+    //console.log(req.headers);
+}
+
+app.delete('/account/delete', async (req, res) => {
+    if (!await isUserAdmin(req)) {
+        return res.status(401).end();
+    }
     userModel.deleteOne({email: req.body.email}, (err) => {
         if (err) {
             return res.status(500).json(err);
@@ -183,7 +216,10 @@ app.delete('/account/delete', (req, res) => {
 
 // deleting the coffee
 // do with postman
-app.delete('/:url', (req, res) => {
+app.delete('/:url', async (req, res) => {
+    if (!await isUserAdmin(req)) {
+        return res.status(401).end();
+    }
     coffeeModel.deleteOne({url: req.params.url}, (err) => {
         if (err) {
             return res.status(500).json(err);

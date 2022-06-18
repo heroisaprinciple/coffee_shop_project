@@ -7,7 +7,6 @@ The project made in 2022, May - June
 ## Technologies used:
 
 1) Node.js + Express
-2) JWT
 
 ## To debug:
 
