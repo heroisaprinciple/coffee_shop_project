@@ -10,9 +10,7 @@ const paymentObj = require('./payment.js');
 //schemas and model files
 const coffeeModel = require('./schemas/coffee_mod.js');
 const clientModel = require('./schemas/client_mod.js');
-const employeeModel = require('./schemas/employees_mod.js');
 const dessertModel = require('./schemas/dessert_mod.js');
-const shopModel = require('./schemas/black_white_mod.js');
 const cartModel = require('./schemas/cart_model.js');
 const orderModel = require('./schemas/order_model.js');
 const userModel = require("./schemas/client_mod");
@@ -61,9 +59,6 @@ app.get('/', (req, res) => {
         try {
             // ".*" ij mongo is LIKE in sql db
             coffeeModel.find({title: {$regex: ".*" + req.query.search + ".*"}})
-                //The lean() function tells mongoose to not hydrate query results.
-                // In other words, the results of your queries will be the same plain JavaScript objects that you would
-                // get from using the Node. js MongoDB driver directly, with none of the mongoose magic
                 .select({_id: 0}).lean()
                 .exec((err, data) => {
                     if (data) {
@@ -81,15 +76,13 @@ app.get('/', (req, res) => {
 });
 
 //POSTING TO DB
-
-//TODO: post for coffee
 app.post('/account/register', bodyParser.urlencoded({extended: false}),
     /* if we have .custom, then there is no necessity in
     having the second parameter in the body
      */
     body('firstname', 'Name Is Required').notEmpty(),
     body('lastname', 'Last Name Is Required').notEmpty(),
-    body('email', 'Not Valid Email').exists().isEmail().normalizeEmail().custom(userEmail => {
+    body('email', 'Not Valid Email').notEmpty().isEmail().normalizeEmail().custom(userEmail => {
         return userModel.find({
             email: userEmail
         }).then(email => {
@@ -98,8 +91,8 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
             }
         })
     }),
-    body('phone').isNumeric().custom((num) => {
-        const regNum = new RegExp(/^((\d{3}[- ]*)|(\(\d{3}[- ]*\) *))\d{3}[- ]?\d{4}$/gm);
+    body('phone').notEmpty().isNumeric().custom((num) => {
+        const regNum = new RegExp(/^(\d{3})\d{3}\d{4}$/gm);
         if (!num.match(regNum)) {
             throw new Error(`Invalid Phone Number`);
         } else {
@@ -110,7 +103,7 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
         const regPassword = new RegExp(/(?=.+[a-z]{1})(?=.+[A-Z]{1})(?=.+\d{1})(?=.+[!@#$%&?]{1}).{8,}$/gm);
         if (!pass.match(regPassword)) {
             throw new Error(`Invalid Pasword. Please, use minimum 8 characters, at least
-            one uppercase, one undercase, one number, one symbol, no spaces`);
+            one uppercase, one undercase, one number, one symbol.`);
         } else {
             return true;
         }
@@ -125,7 +118,6 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
             password: SHA256(req.body.password).toString()
         })
 
-        console.log(req.body.firstname);
         //until you call the func validationRes(), there is no validation happen
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -133,7 +125,6 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
         }
 
         newUser.save();
-        //REDIRECT TO ANOTHER PAGE AND SEE INFO
         return res.json(newUser);
     })
 
@@ -167,7 +158,6 @@ app.post('/account/login', async (req, res) => {
         //always use return res.status()
         return res.status(401).json('Such user does not exist. Please, try one more time or register.');
     }
-    // and for login we shall use decryption
 
     if (user.password !== SHA256(req.body.password).toString()) {
         return res.status(401).json('Wrong password. Try again.')
@@ -178,12 +168,11 @@ app.post('/account/login', async (req, res) => {
 
 const isUserAdmin = async (req) => {
     /*
-    1) Base64 because of Basic Authentication
-
+    Base64 because of Basic Authentication
     We don't need 'Basic' in the authorization header, just the base64 login and password (NOT HASHED)
 
-
-     */
+    All authorization transfers in header
+    */
     if (!req.headers.authorization) {
         return false;
     }
@@ -215,7 +204,6 @@ app.delete('/account/delete', async (req, res) => {
 })
 
 // deleting the coffee
-// do with postman
 app.delete('/:url', async (req, res) => {
     if (!await isUserAdmin(req)) {
         return res.status(401).end();
@@ -228,8 +216,6 @@ app.delete('/:url', async (req, res) => {
         }
     });
 })
-
-//PERSONAL CABINET PAGE
 
 //params are last
 app.get('/:url', (req, res) => {
