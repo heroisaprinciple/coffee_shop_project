@@ -1,11 +1,7 @@
-//TODO: authentication
-
 //if env file vars are undefined
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
-const paymentObj = require('./payment.js');
-//console.log(paymentObj.public, paymentObj.secret);
 
 //schemas and model files
 const coffeeModel = require('./schemas/coffee_mod.js');
@@ -23,26 +19,14 @@ const uniqueValidator = require('mongoose-unique-validator');
 const bodyParser = require('body-parser');
 const cors = require("cors");
 const {engine} = require('express-handlebars');
-const path = require("path");
-const flash = require('express-flash');
-const session = require('express-session');
 const {body, validationResult} = require("express-validator");
 const assert = require("assert");
-//To generate and validate hashes, we'll use the pbkdf2 algorithm from the crypto library that comes with Node.
 const CryptoJS = require('crypto-js');
 const SHA256 = require("crypto-js/sha256");
 const {db} = require('./schemas/coffee_mod.js');
 
 
-app.set('view engine', 'hbs');
-
-// to serve static assets (css files)
-app.use(cors());
-app.use(express.static('public'));
-app.use(express.json());
-
-//TODO: do it with env file
-mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(process.env.DB_LINK,
     {useNewUrlParser: true, useUnifiedTopology: true},
     (err, data) => {
         if (err) {
@@ -52,9 +36,9 @@ mongoose.connect('mongodb+srv://helgaclare:1234@stupidshit.wuybd.mongodb.net/myF
         }
     })
 
-// SEARCHING FOR AN ENTITY
+// RETURNING ALL ENTITIES
 app.get('/', (req, res) => {
-    //if no params, we'll show products
+    // searching for the particular entity
     if (req.query.search) {
         try {
             // ".*" ij mongo is LIKE in sql db
@@ -75,11 +59,8 @@ app.get('/', (req, res) => {
     }
 });
 
-//POSTING TO DB
+// REGISTERING A USER
 app.post('/account/register', bodyParser.urlencoded({extended: false}),
-    /* if we have .custom, then there is no necessity in
-    having the second parameter in the body
-     */
     body('firstname', 'Name Is Required').notEmpty(),
     body('lastname', 'Last Name Is Required').notEmpty(),
     body('email', 'Not Valid Email').notEmpty().isEmail().normalizeEmail().custom(userEmail => {
@@ -128,6 +109,7 @@ app.post('/account/register', bodyParser.urlencoded({extended: false}),
         return res.json(newUser);
     })
 
+// ADDING ENTITIES
 app.post('/coffee/add', bodyParser.urlencoded({extended: false}), async (req, res) => {
     if (!await isUserAdmin(req)) {
         return res.status(401).end();
@@ -150,6 +132,7 @@ app.post('/coffee/add', bodyParser.urlencoded({extended: false}), async (req, re
     })
 })
 
+// AUTHENTICATION
 app.post('/account/login', async (req, res) => {
     //use async/await in case the promise of doc is returned
     const user = await userModel.findOne({email: req.body.email});
