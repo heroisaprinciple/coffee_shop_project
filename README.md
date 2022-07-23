@@ -7,6 +7,7 @@ The project made in 2022, May - June
 ## Technologies used:
 
 1) Node.js + Express
+2) MongoDB
 
 ## To debug:
 
